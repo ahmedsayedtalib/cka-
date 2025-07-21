@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+  labels:
+    app: django
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      name: django
+      labels:
+        app: django
+    spec:
+      tolerations:
+      - key: "color"
+        operator: "Equal"
+        value: "green"
+        effect: "NoExecute"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: size
+                operator: In
+                values:
+                - large
+                - xlarge
+      containers:
+      - name: django
+        image: django
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+  labels:
+    app: django
+spec:
+  selector:
+    app: django
+  type: NodePort
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 32110

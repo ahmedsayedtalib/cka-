@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongoexpress
+  labels:
+    app: mongodb
+    type: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongodb
+      type: frontend
+  template:
+    metadata:
+      name: mongoexpress
+      labels:
+        app: mongodb
+        type: frontend
+    spec:
+      tolerations:
+      - key: "color"
+        operator: "Equal"
+        value: "green"
+        effect: "NoExecute"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: size
+                operator: In
+                values:
+                - large
+                - xlarge
+      containers:
+      - name: mongoexpress
+        image: mongo-express
+        ports:
+        - containerPort: 8081
+        envFrom:
+        - secretRef:
+            name: mongodb-secret
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongoexpress-service
+  labels:
+    app: mongodb
+    type: frontend
+spec:
+  type: NodePort
+  selector:
+    app: mongodb
+    type: frontend
+  ports:
+  - port: 8081
+    targetPort: 8081
+    nodePort: 31100
