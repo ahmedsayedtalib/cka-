@@ -17,14 +17,19 @@ spec:
     spec:
       containers:
       - name: odoo
-        image: odoo
+        image: odoo:17.0
         resources:
           requests:
-            cpu: 500m
-            memory: 256Mi
+            cpu: 100m
+            memory: 128Mi
           limits:
-            cpu: 1
-            memory: 512Mi
+            cpu: 200m
+            memory: 256Mi
+      tolerations:
+      - key: color
+        operator: Equal
+        value: green
+        effect: NoExecute
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -35,16 +40,11 @@ spec:
                 values:
                 - large
                 - xlarge
-      tolerations:
-      - key: "color"
-        operator: "Equal"
-        value: "green"
-        effect: "NoExecute"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: odoo
+  name: odoo-service
   labels:
     app: odoo
 spec:
@@ -52,6 +52,11 @@ spec:
   selector:
     app: odoo
   ports:
-  - port: 5000
-    targetPort: 5000
-    nodePort: 32000
+  - name: odoo-http
+    port: 8069
+    targetPort: 8069
+    nodePort: 31110
+  - name: odoo-longpolling
+    port: 8072
+    targetPort: 8072
+    nodePort: 31111

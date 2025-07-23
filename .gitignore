@@ -1,3 +1,7 @@
 *secret*
 *certs*
 *gitignore*
+*.crt*
+*.csr*
+*.key*
+*-csr*
