@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: security-admins-roles
+rules:
+  - apiGroups: ["authentication.k8s.io","authorization.k8s.io"]
+    resources: ["selfsubjectreviews","tokenreviews","localsubjectaccessreviews","selfsubjectaccessreviews","selfsubjectrulesreviews","subjectaccessreviews"]
+    verbs: ["list","get","create","update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["list","get","create","update","delete"]
