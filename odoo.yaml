@@ -35,11 +35,11 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: size
+              - key: name
                 operator: In
                 values:
-                - large
-                - xlarge
+                - node1
+                - node2
 ---
 apiVersion: v1
 kind: Service

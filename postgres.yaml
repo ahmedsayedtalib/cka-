@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: postgres
   labels:
@@ -49,9 +49,6 @@ spec:
               configMapKeyRef:
                 name: postgres-secret
                 key: password
-          volumeMounts:
-            - name: postgres-storage
-              mountPath: /var/lib/postgresql/data
           resources:
             requests:
               cpu: 100m
@@ -59,14 +56,6 @@ spec:
             limits:
               cpu: 200m
               memory: 1Gi
-  volumeClaimTemplates:
-    - metadata:
-        name: postgres-storage
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
