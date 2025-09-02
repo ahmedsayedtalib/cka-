@@ -1,5 +1,7 @@
 FROM ubuntu
-USER 1000
-WORKDIR app
-RUN ["mkdir","kubernetes"]
-COPY * .
+WORKDIR /
+RUN mkdir ahmed
+RUN mkdir apps
+COPY . apps
+RUN apt update && apt install python3 -y
+

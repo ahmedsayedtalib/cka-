@@ -1,38 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mypersonalwebsite  
-  labels: 
-    app: mywebsite
+  name: myyamlfiles
+  labels:
+    app: ubuntu
 spec:
-  replicas: 1
+  replicas: 6
   selector:
     matchLabels:
-      app: mywebsite
+      app: ubuntu
   template:
     metadata:
-      name: mypersonalwebsite
+      name: myyamlfiles
       labels:
-        app: mywebsite
+        app: ubuntu
     spec:
       containers:
-      - name: mypersonalwebsite
-        image: docker.io/ahmedsayedtalib/mypersonalwebsite:v1.1
+      - name: myyamlfiles
+        image: docker.io/ahmedsayedtalib/myyamlfiles:latest
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 128Mi
           limits:
-            cpu: 200m
-            memory: 512Mi
+            cpu: 150m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 1000
       tolerations:
       - key: "color"
         operator: "Equal"
-        value: "green"
+        value: "blue"
         effect: "NoSchedule"
       - key: "color"
         operator: "Equal"
-        value: "blue"
+        value: "green"
         effect: "NoSchedule"
       affinity:
         nodeAffinity:
@@ -48,14 +50,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mywebsite-service
-  labels: 
-    app: mywebsite
+  name: myyamlfiles-service
+  labels:
+    app: ubuntu
 spec:
   selector:
-    app: mywebsite
+    app: ubuntu
   type: NodePort
   ports:
   - port: 80
     targetPort: 80
-    nodePort: 31000
+    nodePort: 32110

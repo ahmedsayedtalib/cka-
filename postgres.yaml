@@ -1,11 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
   labels:
     app: postgres
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: postgres
@@ -19,43 +19,44 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: size
-                    operator: In
-                    values:
-                      - large
-                      - xlarge
+            - matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - node1
+                - node2
       tolerations:
-        - key: "color"
-          operator: "Equal"
-          value: "green"
-          effect: "NoExecute"
+      - key: color
+        operator: Equal
+        value: blue
+        effect: NoSchedule
+      - key: color
+        operator: Equal
+        value: green
+        effect: NoSchedule
       containers:
-        - name: postgres
-          image: postgres
-          env:
-          - name: POSTGRES_DB
-            valueFrom:
-              configMapKeyRef:
-                name: posgtres-config
-                key: POSTGRES_USER
-          - name: POSTGRES_USER
-            valueFrom:
-              configMapKeyRef:
-                name: postgres-config
-                key:  POSTGRES_USER
-          - name: POSTGRESS_PASSWORD
-            valueFrom:
-              configMapKeyRef:
-                name: postgres-secret
-                key: password
-          resources:
-            requests:
-              cpu: 100m
-              memory: 512Mi
-            limits:
-              cpu: 200m
-              memory: 1Gi
+      - name: postgres
+        image: postgres
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteMany"]
+      resources:
+        requests:
+          storage: 1Gi
+
 ---
 apiVersion: v1
 kind: Service
@@ -66,7 +67,9 @@ metadata:
 spec:
   selector:
     app: postgres
-  type: ClusterIP
+  type: NodePort
   ports:
-    - port: 5432
-      targetPort: 5432
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+    nodePort: 32115

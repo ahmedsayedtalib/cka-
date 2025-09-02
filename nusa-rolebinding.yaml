@@ -1,16 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: ahmedsayed-rolebinding
+  name: nusa-rolebinding
 roleRef:
+  name: nusa-role
   apiGroup: rbac.authorization.k8s.io
-  name: ahmedsayed-role
   kind: Role
 subjects:
   - apiGroup: rbac.authorization.k8s.io
-    name: ahmedsayed
+    name: nusa
     kind: User
-  - apiGroup: ""
-    name: ahmedsayed
-    kind: ServiceAccount
-    namespace: default

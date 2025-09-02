@@ -6,7 +6,7 @@ metadata:
     app: mongodb
     type: backend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: mongodb
@@ -44,11 +44,18 @@ spec:
           limits:
             cpu: 200m
             memory: 1Gi
+        volumeMounts:
+        - name: mongo-volume
+          mountPath: /data/db
       tolerations:
       - key: "color"
         operator: "Equal"
         value: "green"
-        effect: "NoExecute"
+        effect: "NoSchedule"
+      - key: "color"
+        operator: "Equal"
+        value: "blue"
+        effect: "NoSchedule"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -59,6 +66,12 @@ spec:
                 values:
                 - node1
                 - node2
+      volumes:
+      - name: mongo-volume
+        hostPath:
+          path: /home/ahmedsayed/kube-storage
+          type: DirectoryOrCreate
+
 ---
 apiVersion: v1
 kind: Service
